@@ -1,13 +1,16 @@
 pipeline {
     agent any
     environment {
-        // This links Jenkins to the setting you just checked in the image
-        DOCKER_HOST = "tcp://localhost:2375"
+        DOCKER_HOST = "tcp://127.0.0.1:2375"
+        // THIS IS THE KEY: It forces Docker to stop checking version compatibility
+        COMPOSE_CONVERT_WINDOWS_PATHS = "1"
+        DOCKER_API_VERSION = "1.41" 
     }
     stages {
         stage('Build') {
             steps {
-                bat "docker build -t merch-app:latest ."
+                // Use '--no-cache' to ensure a clean start
+                bat "docker build --no-cache -t merch-app:latest ."
             }
         }
         stage('Test') {
@@ -17,7 +20,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                // Next step: apply your Kubernetes manifest
+                // Ensure Docker Desktop Kubernetes is ENABLED in settings
                 bat "kubectl apply -f deployment.yaml"
             }
         }
