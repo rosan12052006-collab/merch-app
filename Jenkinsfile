@@ -1,23 +1,23 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = "merch-app:latest"
+        // This links Jenkins to the setting you just checked in the image
+        DOCKER_HOST = "tcp://localhost:2375"
     }
     stages {
         stage('Build') {
             steps {
-                // Use 'bat' instead of 'sh' for Windows
-                bat "docker build -t %DOCKER_IMAGE% ."
+                bat "docker build -t merch-app:latest ."
             }
         }
         stage('Test') {
             steps {
-                echo 'Running tests...'
+                bat "docker images"
             }
         }
         stage('Deploy') {
             steps {
-                // Use 'bat' instead of 'sh' for Windows
+                // Next step: apply your Kubernetes manifest
                 bat "kubectl apply -f deployment.yaml"
             }
         }
