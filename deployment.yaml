@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: merch-app-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: merch-app
@@ -13,9 +13,9 @@ spec:
         app: merch-app
     spec:
       containers:
-      - name: merch-app
+      - name: merch-app-container
         image: merch-app:latest
-        imagePullPolicy: Never # Uses the image you just built locally
+        imagePullPolicy: Never  # Tells K8s to use the local build
         ports:
         - containerPort: 80
 ---
