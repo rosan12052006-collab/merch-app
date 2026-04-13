@@ -6,18 +6,19 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                // Use 'bat' instead of 'sh' for Windows
+                bat "docker build -t %DOCKER_IMAGE% ."
             }
         }
         stage('Test') {
             steps {
-                echo 'Running basic accessibility checks...'
+                echo 'Running tests...'
             }
         }
         stage('Deploy') {
             steps {
-                // Deploying to Kubernetes (Docker Desktop context)
-                sh "kubectl apply -f deployment.yaml"
+                // Use 'bat' instead of 'sh' for Windows
+                bat "kubectl apply -f deployment.yaml"
             }
         }
     }
