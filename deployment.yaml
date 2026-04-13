@@ -1,31 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: merch-site
+  name: merch-app-deployment
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: merch
+      app: merch-app
   template:
     metadata:
       labels:
-        app: merch
+        app: merch-app
     spec:
       containers:
-      - name: merch-container
+      - name: merch-app
         image: merch-app:latest
+        imagePullPolicy: Never # Uses the image you just built locally
         ports:
         - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: merch-service
+  name: merch-app-service
 spec:
-  type: LoadBalancer
-  ports:
-  - port: 80
-    targetPort: 80
+  type: NodePort
   selector:
-    app: merch
+    app: merch-app
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30001
