@@ -2,7 +2,10 @@ pipeline {
     agent any
 
     environment {
-        // Explicitly defining the path with quotes to handle the space in "Program Files"
+        // Fix for the 500 error: Force the API to a version Windows supports
+        DOCKER_API_VERSION = "1.41"
+        // This tells Docker to use the TCP port instead of the broken pipe
+        DOCKER_HOST = "tcp://127.0.0.1:2375"
         DOCKER_PATH = '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe"'
     }
 
@@ -10,23 +13,18 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building Docker Image...'
-                // We remove -H tcp://127.0.0.1:2375 to avoid the 500 error
-                // This forces Docker to use the local pipe instead of the network
+                // We use the full path AND the environment variables above
                 bat "${DOCKER_PATH} build -t merch-app:latest ."
             }
         }
-
         stage('Test') {
             steps {
-                echo 'Verifying Image...'
                 bat "${DOCKER_PATH} images | findstr merch-app"
             }
         }
-
         stage('Deploy') {
             steps {
                 echo 'Deploying to Kubernetes...'
-                // Ensure Kubernetes is enabled in Docker Desktop settings
                 bat "kubectl apply -f deployment.yaml"
             }
         }
